@@ -4,7 +4,7 @@ Command line tools to do batch processing of commonly used features in [samsaadh
 All the tools should be in the home directory of the vagrant virtual machine which has a working samsaadhani instance deployed. For more information on installing samsaadhani, please take a look at [samsaadhani-deploy](https://www.github.com/arunkmsn/samsadhani-deploy).
 
 # Usage
-All the tools are in `/home/vagrant/scl` folder. The list of words should be in Unicode format and the words must be separated by newline.
+All the tools are in `/home/vagrant/scl-cl` folder. The list of words should be in Unicode format and the words must be separated by newline.
 
 ## Morphological analyser
 ```
