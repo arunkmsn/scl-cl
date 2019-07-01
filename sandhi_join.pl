@@ -1,9 +1,13 @@
 #!/usr/bin/env perl
 
+use strict;
+use warnings;
+
 require "/home/vagrant/scl/paths.pl";
+chdir("$GlblVar::SCLINSTALLDIR/sandhi");
 require "$GlblVar::SCLINSTALLDIR/converters/convert.pl";
 require "$GlblVar::SCLINSTALLDIR/sandhi/sandhi.pl";
-require "./apavAxa_any.pl";
+require "$GlblVar::SCLINSTALLDIR/sandhi/apavAxa_any.pl";
 require "$GlblVar::SCLINSTALLDIR/sandhi/any_sandhi.pl";
 
 my $filename=$ARGV[0];
@@ -12,46 +16,36 @@ my $encoding=$ARGV[1];
 open(my $fh, '<:encoding(UTF-8)', $filename) or die "Could not open file '$filename' $!";
 
 while (my $line=<$fh>) {
-  @words = split(/:/, $line);
 
-  $word1 = chomp($words[0]);
-  $word2 = chomp($words[1]);
+  my @words = split(/:/, $line);
+  my $word1 = $words[0];
+  my $word2 = $words[1];
+  my $sandhi_type = "any";
 
-  $sandhi_type = "any";
-
-  $word1_wx=&convert($encoding,$word1,$GlblVar::SCLINSTALLDIR);
+  my $word1_wx=&convert($encoding, $word1, $GlblVar::SCLINSTALLDIR);
   chomp($word1_wx);
 
-  $word2_wx=&convert($encoding,$word2,$GlblVar::SCLINSTALLDIR);
+  my $word2_wx=&convert($encoding, $word2, $GlblVar::SCLINSTALLDIR);
   chomp($word2_wx);
-      
-  $ans = &sandhi($word1_wx,$word2_wx);
-  @ans=split(/,/, $ans);
-  @padas = split(/:/, $ans[0]);
-  @analysis = split(/:/, $ans[1]);
-  @sutra = split(/:/, $ans[2]);
-  $str = "";
+
+  my $ans = &sandhi($word1_wx, $word2_wx);
+
+  my @ans=split(/,/, $ans);
+  my @padas = split(/:/, $ans[0]);
+  my @analysis = split(/:/, $ans[1]);
+  my @sutra = split(/:/, $ans[2]);
+
+  my $str = "";
   for (my $i = 0; $i < @padas; $i += 1) {
-       my $pada = @padas[$i];
-       my $ana = @analysis[$i];
-       $str = $str . $pada . "\t\t" . $ana . "\t\t" . $sutra . "\n";
+       my $pada = $padas[$i];
+       my $ana = $analysis[$i];
+       my $sut = $sutra[$i];
+       $str = $str . $pada . "\t\t\t" . $ana . "\t\t\t" . $sut . "\n";
   }
-  $string = $word1_wx . " + " . $word2_wx . " = \n" .
-            $str . "\n\t" . $ans[3] . "\n\t" . $ans[4] .
-            "\n\t" . $ans[5] . "\n\t" . $ans[6] . "\n\t" . $ans[7];
 
-  $cmd = "echo \"$string\" | $GlblVar::SCLINSTALLDIR/converters/ri_skt | $GlblVar::SCLINSTALLDIR/converters/iscii2utf8.py 1";
-  $san = `$cmd`;
+  my $strn = $word1_wx . " + " . $word2_wx . " = \n" . $str;
+
+  my $cmd = "echo \"$strn\" | $GlblVar::SCLINSTALLDIR/converters/ri_skt | $GlblVar::SCLINSTALLDIR/converters/iscii2utf8.py 1";
+  my $san = `$cmd`;
   print $san;
-  $san=~s/,:/,/g;
-
-
-  @san=split(/,/,$san);
-  @san2=split(/:/,$san[2]);
-  @san3=split(/:/,$san[3]);
-  @san4=split(/:/,$san[4]);
-  print @san;
-  print @san2;
-  print @san3;
-  print @san4;
 }
